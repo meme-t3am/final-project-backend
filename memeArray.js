@@ -14,25 +14,33 @@ const memeArray = [
   'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg',
 ];
 
-console.log('memeArray', memeArray);
+memeArray;
 
-const got = require('got'); // if you don't have "got" - install it with "npm install got"
+// const got = require('got');
+// if you don't have "got" - install it with "npm install got"
 
-const apiKey = 'acc_400a422a4c240cb';
-const apiSecret = 'e4b20fa9c5f86559fd6670ad2258944a';
+const fetch = require('cross-fetch');
 
-const imageUrl =
-  'https://docs.imagga.com/static/images/docs/sample/japan-605234_1280.jpg';
-const url =
-  'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imageUrl);
 
-async function imaggaAPI() {
-  const res = await got(url, { username: apiKey, password: apiSecret });
-  console.log('res.body', res.body);
+async function imaggaAPI(imgURL) {
+
+  const url =
+  'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
+
+  const res = await fetch(url, {
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(`${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`, 'binary').toString('base64'),
+      'Accept': 'application/json'
+    }
+  });
+  const body = await res.json();
+  return body;
 }
 
-imaggaAPI();
 
+module.exports = {
+  imaggaAPI
+};
 // (async () => {
 //   try {
 //     const response = await got(url, { username: apiKey, password: apiSecret });
