@@ -1,3 +1,8 @@
+const pool = require('../lib/utils/pool');
+const setup = require('../data/setup');
+const request = require('supertest');
+const app = require('../lib/app');
+
 const memeArray = [
   'https://i.kym-cdn.com/photos/images/newsfeed/000/911/486/6bb.jpg',
   'https://i.pinimg.com/originals/20/e4/8a/20e48a7750f4d322d9d01efab27e3071.jpg',
@@ -13,38 +18,23 @@ const memeArray = [
   // 'https://www.porchdrinking.com/wp-content/uploads/2017/11/3jqRCaO-700x525.png',
   // 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg',
 ];
+// many memes are commented out
 
-memeArray;
-
-
-const fetch = require('cross-fetch');
-
-
-async function imaggaAPI(imgURL) {
-
-  const url =
-  'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
-
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': 'Basic ' + Buffer.from(`${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`, 'binary').toString('base64'),
-      'Accept': 'application/json'
-    }
+describe('user routes', () => {
+  beforeEach(() => {
+    return setup(pool);
   });
-  const body = await res.json();
-  return body;
-}
+  afterAll(() => {
+    pool.end();
+  });
 
+  it('/imagga returns some data hopefully', async () => {
+    const resp = await request(app).post('/api/v1/imaggas').send({ url: 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg' });
+    expect(resp.body).toEqual(expect.anything());
+  });
 
-
-
-async function addMemes(memeUrlArray) {
-  const promises = memeUrlArray.map((url) => imaggaAPI(url));
-  //URL: url, analysis: anaylisObject
-  const analysis = await Promise.all(promises);
-  return analysis;
-}
-
-module.exports = {
-  imaggaAPI, addMemes
-};
+  it('/imagga returns JSON object with tags', async () => {
+    const resp = await request(app).post('/api/v1/imaggas/data').send(memeArray);
+    expect(resp.body).toEqual({});
+  });
+});
