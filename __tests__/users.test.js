@@ -101,11 +101,4 @@ describe('user routes', () => {
     const resp = await agent.delete('/api/v1/users/sessions');
     expect(resp.status).toBe(204);
   });
-  it('/imagga returns some data hopefully', async () => {
-    const [agent] = await registerAndLogin();
-    const resp = await agent.post('/api/v1/users/imagga').send({ url: 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg' });
-    expect(resp.body).toEqual(expect.anything());
-  });
-  
-
 });

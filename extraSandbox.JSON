@@ -1,0 +1,472 @@
+{
+    "result": {
+        "tags": [
+            {
+                "confidence": 98.4662017822266,
+                "tag": {
+                    "en": "book jacket"
+                }
+            },
+            {
+                "confidence": 77.58984375,
+                "tag": {
+                    "en": "jacket"
+                }
+            },
+            {
+                "confidence": 58.2133979797363,
+                "tag": {
+                    "en": "wrapping"
+                }
+            },
+            {
+                "confidence": 38.989315032959,
+                "tag": {
+                    "en": "covering"
+                }
+            },
+            {
+                "confidence": 28.7694988250732,
+                "tag": {
+                    "en": "magazine"
+                }
+            },
+            {
+                "confidence": 25.4308948516846,
+                "tag": {
+                    "en": "slick"
+                }
+            },
+            {
+                "confidence": 23.325138092041,
+                "tag": {
+                    "en": "product"
+                }
+            },
+            {
+                "confidence": 21.4920177459717,
+                "tag": {
+                    "en": "man"
+                }
+            },
+            {
+                "confidence": 20.8240432739258,
+                "tag": {
+                    "en": "comic book"
+                }
+            },
+            {
+                "confidence": 20.7210502624512,
+                "tag": {
+                    "en": "philately"
+                }
+            },
+            {
+                "confidence": 20.689884185791,
+                "tag": {
+                    "en": "postmark"
+                }
+            },
+            {
+                "confidence": 20.3174076080322,
+                "tag": {
+                    "en": "stamp"
+                }
+            },
+            {
+                "confidence": 20.1718711853027,
+                "tag": {
+                    "en": "letter"
+                }
+            },
+            {
+                "confidence": 20.099178314209,
+                "tag": {
+                    "en": "mail"
+                }
+            },
+            {
+                "confidence": 19.5006637573242,
+                "tag": {
+                    "en": "old"
+                }
+            },
+            {
+                "confidence": 19.0188903808594,
+                "tag": {
+                    "en": "vintage"
+                }
+            },
+            {
+                "confidence": 17.7534637451172,
+                "tag": {
+                    "en": "circa"
+                }
+            },
+            {
+                "confidence": 17.7264175415039,
+                "tag": {
+                    "en": "male"
+                }
+            },
+            {
+                "confidence": 17.5324821472168,
+                "tag": {
+                    "en": "envelope"
+                }
+            },
+            {
+                "confidence": 17.4728679656982,
+                "tag": {
+                    "en": "creation"
+                }
+            },
+            {
+                "confidence": 17.2005500793457,
+                "tag": {
+                    "en": "retro"
+                }
+            },
+            {
+                "confidence": 16.4269752502441,
+                "tag": {
+                    "en": "ancient"
+                }
+            },
+            {
+                "confidence": 16.2840309143066,
+                "tag": {
+                    "en": "aged"
+                }
+            },
+            {
+                "confidence": 15.7198371887207,
+                "tag": {
+                    "en": "postage"
+                }
+            },
+            {
+                "confidence": 15.697247505188,
+                "tag": {
+                    "en": "postal"
+                }
+            },
+            {
+                "confidence": 15.6827754974365,
+                "tag": {
+                    "en": "address"
+                }
+            },
+            {
+                "confidence": 15.2983283996582,
+                "tag": {
+                    "en": "card"
+                }
+            },
+            {
+                "confidence": 15.1746196746826,
+                "tag": {
+                    "en": "business"
+                }
+            },
+            {
+                "confidence": 14.9058790206909,
+                "tag": {
+                    "en": "person"
+                }
+            },
+            {
+                "confidence": 14.8873929977417,
+                "tag": {
+                    "en": "sport"
+                }
+            },
+            {
+                "confidence": 14.6083869934082,
+                "tag": {
+                    "en": "message"
+                }
+            },
+            {
+                "confidence": 13.9388027191162,
+                "tag": {
+                    "en": "people"
+                }
+            },
+            {
+                "confidence": 13.7212686538696,
+                "tag": {
+                    "en": "competition"
+                }
+            },
+            {
+                "confidence": 13.573037147522,
+                "tag": {
+                    "en": "adult"
+                }
+            },
+            {
+                "confidence": 12.7483062744141,
+                "tag": {
+                    "en": "money"
+                }
+            },
+            {
+                "confidence": 11.8183994293213,
+                "tag": {
+                    "en": "finance"
+                }
+            },
+            {
+                "confidence": 10.868236541748,
+                "tag": {
+                    "en": "post office"
+                }
+            },
+            {
+                "confidence": 10.75865650177,
+                "tag": {
+                    "en": "currency"
+                }
+            },
+            {
+                "confidence": 10.7522706985474,
+                "tag": {
+                    "en": "silhouette"
+                }
+            },
+            {
+                "confidence": 10.5044298171997,
+                "tag": {
+                    "en": "player"
+                }
+            },
+            {
+                "confidence": 10.476676940918,
+                "tag": {
+                    "en": "ball"
+                }
+            },
+            {
+                "confidence": 10.0934457778931,
+                "tag": {
+                    "en": "symbol"
+                }
+            },
+            {
+                "confidence": 9.83164978027344,
+                "tag": {
+                    "en": "printed"
+                }
+            },
+            {
+                "confidence": 9.69744300842285,
+                "tag": {
+                    "en": "close"
+                }
+            },
+            {
+                "confidence": 9.65034294128418,
+                "tag": {
+                    "en": "success"
+                }
+            },
+            {
+                "confidence": 9.50326919555664,
+                "tag": {
+                    "en": "bill"
+                }
+            },
+            {
+                "confidence": 9.43927478790283,
+                "tag": {
+                    "en": "men"
+                }
+            },
+            {
+                "confidence": 9.14483451843262,
+                "tag": {
+                    "en": "cash"
+                }
+            },
+            {
+                "confidence": 9.11629390716553,
+                "tag": {
+                    "en": "bank"
+                }
+            },
+            {
+                "confidence": 8.98983001708984,
+                "tag": {
+                    "en": "human"
+                }
+            },
+            {
+                "confidence": 8.91229820251465,
+                "tag": {
+                    "en": "game"
+                }
+            },
+            {
+                "confidence": 8.90119361877441,
+                "tag": {
+                    "en": "financial"
+                }
+            },
+            {
+                "confidence": 8.89702129364014,
+                "tag": {
+                    "en": "philatelic"
+                }
+            },
+            {
+                "confidence": 8.8595142364502,
+                "tag": {
+                    "en": "shows"
+                }
+            },
+            {
+                "confidence": 8.82173252105713,
+                "tag": {
+                    "en": "businessman"
+                }
+            },
+            {
+                "confidence": 8.65757179260254,
+                "tag": {
+                    "en": "soccer"
+                }
+            },
+            {
+                "confidence": 8.65300941467285,
+                "tag": {
+                    "en": "education"
+                }
+            },
+            {
+                "confidence": 8.53842544555664,
+                "tag": {
+                    "en": "hobby"
+                }
+            },
+            {
+                "confidence": 8.40907955169678,
+                "tag": {
+                    "en": "portrait"
+                }
+            },
+            {
+                "confidence": 8.33012771606445,
+                "tag": {
+                    "en": "print media"
+                }
+            },
+            {
+                "confidence": 8.2159252166748,
+                "tag": {
+                    "en": "alone"
+                }
+            },
+            {
+                "confidence": 8.14742088317871,
+                "tag": {
+                    "en": "student"
+                }
+            },
+            {
+                "confidence": 8.08354187011719,
+                "tag": {
+                    "en": "active"
+                }
+            },
+            {
+                "confidence": 7.96116971969604,
+                "tag": {
+                    "en": "to"
+                }
+            },
+            {
+                "confidence": 7.91657018661499,
+                "tag": {
+                    "en": "1987"
+                }
+            },
+            {
+                "confidence": 7.77964782714844,
+                "tag": {
+                    "en": "championship"
+                }
+            },
+            {
+                "confidence": 7.70475149154663,
+                "tag": {
+                    "en": "modern"
+                }
+            },
+            {
+                "confidence": 7.68184852600098,
+                "tag": {
+                    "en": "football"
+                }
+            },
+            {
+                "confidence": 7.59348106384277,
+                "tag": {
+                    "en": "professional"
+                }
+            },
+            {
+                "confidence": 7.51765441894531,
+                "tag": {
+                    "en": "sign"
+                }
+            },
+            {
+                "confidence": 7.41838645935059,
+                "tag": {
+                    "en": "dollar"
+                }
+            },
+            {
+                "confidence": 7.41168117523193,
+                "tag": {
+                    "en": "action"
+                }
+            },
+            {
+                "confidence": 7.20567464828491,
+                "tag": {
+                    "en": "black"
+                }
+            },
+            {
+                "confidence": 7.1770133972168,
+                "tag": {
+                    "en": "school"
+                }
+            },
+            {
+                "confidence": 7.16318655014038,
+                "tag": {
+                    "en": "team"
+                }
+            },
+            {
+                "confidence": 7.10013437271118,
+                "tag": {
+                    "en": "face"
+                }
+            },
+            {
+                "confidence": 7.05316686630249,
+                "tag": {
+                    "en": "paper"
+                }
+            }
+        ]
+    },
+    "status": {
+        "text": "",
+        "type": "success"
+    }
+}
