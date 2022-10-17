@@ -62,11 +62,18 @@ function mungeData(data) {
   });
   return result;
 }
-mungeData(data);
 
 async function addMemes(memeUrlArray) {
-  const promises = memeUrlArray.map((url) => imaggaAPI(url));
-  //URL: url, analysis: anaylisObject
+  const promises = memeUrlArray.map(async (url) => {
+    const results = await imaggaAPI(url);
+    const tags = mungeData(results);
+    const newObj = {
+      url,
+      tags
+    };
+    return newObj;
+  });
+
   const analysis = await Promise.all(promises);
   return analysis;
 }
