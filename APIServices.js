@@ -1,4 +1,6 @@
 const fetch = require('cross-fetch');
+const Meme = require('./lib/models/Meme');
+const Tag = require('./lib/models/Tag');
 
 const data = {
   'result': {
@@ -67,9 +69,14 @@ async function addMemes(memeUrlArray) {
   const promises = memeUrlArray.map(async (url) => {
     const results = await imaggaAPI(url);
     const tags = mungeData(results);
+    const meme = await Meme.insert(url);
+    const tagPromises = tags.map((tag) => {
+      Tag.insertMeme(tag.tag, tag.confidence, meme.id);
+    });
+    Promise.all(tagPromises);
     const newObj = {
       url,
-      tags
+      tags,
     };
     return newObj;
   });

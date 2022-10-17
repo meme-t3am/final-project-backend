@@ -35,7 +35,6 @@ describe('user routes', () => {
 
   it.only('/imagga returns JSON object with tags', async () => {
     const resp = await request(app).post('/api/v1/imaggas/data').send(memeArray);
-    console.log(resp.body);
     expect(resp.body).toEqual({});
   });
 });
