@@ -21,3 +21,18 @@ CREATE TABLE meme_tags (
   tag VARCHAR,
   confidence DECIMAL
 );
+
+CREATE TABLE user_image (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  url VARCHAR
+  user_id INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE user_tags (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_image_id INT NOT NULL,
+  FOREIGN KEY (user_image_id) REFERENCES user_image(id),
+  tag VARCHAR,
+  confidence DECIMAL
+);
