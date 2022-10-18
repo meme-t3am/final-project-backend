@@ -6,7 +6,7 @@ const app = require('../lib/app');
 const memeArray = [
   'https://i.kym-cdn.com/photos/images/newsfeed/000/911/486/6bb.jpg',
   'https://i.pinimg.com/originals/20/e4/8a/20e48a7750f4d322d9d01efab27e3071.jpg',
-  // 'https://m.media-amazon.com/images/I/51F19r4qV3L._AC_SY580_.jpg',
+  'https://m.media-amazon.com/images/I/51F19r4qV3L._AC_SY580_.jpg',
   // 'https://i.kym-cdn.com/entries/icons/original/000/030/338/New.jpg',
   // 'https://cdn.mamamia.com.au/wp/wp-content/uploads/2018/06/18155147/funniest-memes-14.jpg',
   // 'https://www.letseatcake.com/wp-content/uploads/2021/07/funny-memes-13.jpg',
@@ -33,8 +33,13 @@ describe('user routes', () => {
     expect(resp.body).toEqual(expect.anything());
   });
 
-  it.only('/imagga returns JSON object with tags', async () => {
+  it('/imagga returns JSON object with tags', async () => {
     const resp = await request(app).post('/api/v1/imaggas/data').send(memeArray);
+    expect(resp.body).toEqual({});
+  });
+
+  it('GET all memes should return a big array', async () => {
+    const resp = await request(app).get('/api/v1/imaggas');
     expect(resp.body).toEqual({});
   });
 });
