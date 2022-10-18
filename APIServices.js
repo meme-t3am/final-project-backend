@@ -141,21 +141,22 @@ const arrOne =   {
 
 
 
-async function returnsArr () {
+async function returnsArr (userArr) {
   const resp = await fetch('http://localhost:7890/api/v1/imaggas');
   const arrayOfMemes = await resp.json();
   arrayOfMemes.map((meme) => {
     const newArr = meme;
-    const results = compareArr(arrOne, newArr);
+    const results = compareArr(userArr, newArr);
     console.log('results', results);
     return results;
   });
 }
 
-returnsArr();
+returnsArr(arrOne);
+
 
 function compareArr (userImageObj, memeObj) {
-  const userImageUrl = userImageObj.url;
+  // const userImageUrl = userImageObj.url;
   const memeUrl = memeObj.url;
 
   const sameTags = memeObj.meme_tags.filter((obj2) => userImageObj.tags.find((obj1) => obj1.tag === obj2.tag));
@@ -163,7 +164,7 @@ function compareArr (userImageObj, memeObj) {
   const totalConfidence = sameTags.reduce((acc, curr) => {
     return acc + curr.confidence;
   }, 0);
-  return [sameTags, totalConfidence];
+  return [totalConfidence, memeUrl];
 }
 
 
@@ -172,3 +173,23 @@ function compareArr (userImageObj, memeObj) {
 module.exports = {
   imaggaAPI, addMemes, compareArr
 };
+
+
+// divide confidence of arr1 with confidence of arr2. Closer then number is to one the more accurate it is
+// ie. if confidenceNum > .75 && > 1.25 && confidence > 40, etc
+// const newObj = {
+//   tag: 'string',
+//   confidence: 4,
+//   confidenceInt: .67
+// };
+
+// if (newObj.confidence > 50 && newObj.confidenceInt is close to one) {
+//   return {...newObj, confidenceScore: 1}; 
+//   else if(newObj.confidence > 20 && > 50 && newObj.confidenceInt is less close to one ) {
+//     return{...newObj, confidenceScore: .75}
+//     else {
+//       return { ...newObj, confidenceScore: .50}
+//     }
+//   }
+// }
+// confidence
