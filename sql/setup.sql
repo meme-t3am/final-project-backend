@@ -1,10 +1,23 @@
--- Use this file to define your SQL tables
--- The SQL in this file will be executed when you run `npm run setup-db`
 DROP TABLE IF EXISTS users cascade;
+DROP TABLE IF EXISTS memes cascade;
+DROP TABLE IF EXISTS meme_tags cascade;
 
 CREATE TABLE users (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email VARCHAR UNIQUE,
   password_hash VARCHAR NOT NULL,
   user_name VARCHAR NOT NULL
+);
+
+CREATE TABLE memes (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  url VARCHAR
+);
+
+CREATE TABLE meme_tags (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  meme_id INT NOT NULL,
+  FOREIGN KEY (meme_id) REFERENCES memes(id),
+  tag VARCHAR,
+  confidence DECIMAL
 );

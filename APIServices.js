@@ -1,5 +1,42 @@
 const fetch = require('cross-fetch');
+const Meme = require('./lib/models/Meme');
+const Tag = require('./lib/models/Tag');
 
+const data = {
+  'result': {
+    'tags': [
+      {
+        'confidence': 98.4662017822266,
+        'tag': {
+          'en': 'book jacket'
+        }
+      },
+      {
+        'confidence': 77.58984375,
+        'tag': {
+          'en': 'jacket'
+        }
+      },
+      {
+        'confidence': 58.2133979797363,
+        'tag': {
+          'en': 'wrapping'
+        }
+      },
+      {
+        'confidence': 38.989315032959,
+        'tag': {
+          'en': 'covering'
+        }
+      }
+      
+    ]
+  },
+  'status': {
+    'text': '',
+    'type': 'success'
+  }
+};
 
 async function imaggaAPI(imgURL) {
 
@@ -17,11 +54,33 @@ async function imaggaAPI(imgURL) {
 }
 
 
-
+function mungeData(data) {
+  const result = data.result.tags.map((datum) => {
+    const newObj = {
+      confidence: datum.confidence,
+      tag: datum.tag.en
+    };
+    return newObj;
+  });
+  return result;
+}
 
 async function addMemes(memeUrlArray) {
-  const promises = memeUrlArray.map((url) => imaggaAPI(url));
-  //URL: url, analysis: anaylisObject
+  const promises = memeUrlArray.map(async (url) => {
+    const results = await imaggaAPI(url);
+    const tags = mungeData(results);
+    const meme = await Meme.insert(url);
+    const tagPromises = tags.map((tag) => {
+      Tag.insertMeme(tag.tag, tag.confidence, meme.id);
+    });
+    Promise.all(tagPromises);
+    const newObj = {
+      url,
+      tags,
+    };
+    return newObj;
+  });
+
   const analysis = await Promise.all(promises);
   return analysis;
 }
