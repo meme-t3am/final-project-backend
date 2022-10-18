@@ -38,8 +38,9 @@ describe('user routes', () => {
     expect(resp.body).toEqual({});
   });
 
-  it('GET all memes should return a big array', async () => {
-    const resp = await request(app).get('/api/v1/imaggas');
+  it.only('GET all memes should return a big array', async () => {
+    await request(app).post('/api/v1/imaggas/data').send(memeArray);
+    const resp = await request(app).get('/api/v1/imaggas/');
     expect(resp.body).toEqual({});
   });
 });
