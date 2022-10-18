@@ -43,4 +43,8 @@ describe('user routes', () => {
     const resp = await request(app).get('/api/v1/imaggas/');
     expect(resp.body).toEqual({});
   });
+  it('compares arrays', async () => {
+    const res = await request(app).post('/api/v1/imaggas/testing').send(memeArray);
+    expect(res.body).toEqual({});
+  });
 });
