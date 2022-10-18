@@ -1,6 +1,9 @@
 DROP TABLE IF EXISTS users cascade;
 DROP TABLE IF EXISTS memes cascade;
 DROP TABLE IF EXISTS meme_tags cascade;
+DROP TABLE IF EXISTS user_image cascade;
+DROP TABLE IF EXISTS user_tags cascade;
+
 
 CREATE TABLE users (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -24,7 +27,7 @@ CREATE TABLE meme_tags (
 
 CREATE TABLE user_image (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  url VARCHAR
+  url VARCHAR,
   user_id INT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -35,4 +38,4 @@ CREATE TABLE user_tags (
   FOREIGN KEY (user_image_id) REFERENCES user_image(id),
   tag VARCHAR,
   confidence DECIMAL
-);
+)
