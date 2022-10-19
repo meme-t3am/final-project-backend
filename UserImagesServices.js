@@ -1,6 +1,6 @@
 const UserImage = require('./lib/models/UserImage');
 const UserTag = require('./lib/models/UserTag');
-const { imaggaAPI, mungeData } = require('./APIServices');
+const { returnsArr, imaggaAPI, mungeData } = require('./APIServices');
 
 async function addUserImages(url, user_id) {
   const results = await imaggaAPI(url.url);
@@ -14,7 +14,9 @@ async function addUserImages(url, user_id) {
     url,
     tags,
   };
-  return newObj;
+  const returnUrl = await returnsArr(newObj);
+  console.log('returnUrl', returnUrl);
+  return returnUrl;
 }
 
 module.exports = {

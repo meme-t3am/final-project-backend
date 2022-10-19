@@ -169,6 +169,7 @@ module.exports = {
   addMemes,
   compareArr,
   mungeData,
+  returnsArr,
 };
 
 // divide confidence of arr1 with confidence of arr2. Closer then number is to one the more accurate it is
