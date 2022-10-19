@@ -30,15 +30,15 @@ describe('user routes', () => {
 
   it('/imagga returns some data hopefully', async () => {
     const resp = await request(app).post('/api/v1/imaggas').send({ url: 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg' });
-    expect(resp.body).toEqual(expect.anything());
+    expect(resp.body).toEqual([]);
   });
 
-  it('/imagga returns JSON object with tags', async () => {
+  it.only('/imagga returns JSON object with tags', async () => {
     const resp = await request(app).post('/api/v1/imaggas/data').send(memeArray);
     expect(resp.body).toEqual({});
   });
 
-  it.only('GET all memes should return a big array', async () => {
+  it('GET all memes should return a big array', async () => {
     await request(app).post('/api/v1/imaggas/data').send(memeArray);
     const resp = await request(app).get('/api/v1/imaggas/');
     expect(resp.body).toEqual({});
