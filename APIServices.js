@@ -4,6 +4,8 @@ const Tag = require('./lib/models/Tag');
 const UserImage = require('./lib/models/UserImage');
 const UserTag = require('./lib/models/UserTag');
 
+class ConcurrencyLimitError extends Error {}
+
 
 async function addUserImages(url, user_id) {
   const results = await imaggaAPI(url.url);
@@ -40,7 +42,11 @@ async function imaggaAPI(imgURL) {
     },
   });
   const body = await res.json();
-  return body;
+  if (res.status === 403 && body.status.text.match(/concurrent/)) {
+    throw new ConcurrencyLimitError();
+  } else {
+    return body;
+  }
 }
 
 function mungeData(data) {
@@ -59,6 +65,7 @@ async function addMemes(memeUrlArray) {
   const promises = memeUrlArray.map(async (url) => {
     const results = await imaggaAPI(url);
     const tags = mungeData(results);
+    console.log('tags', tags);
     const meme = await Meme.insert(url);
     const tagPromises = tags.map((tag) =>
       Tag.insertMeme(tag.tag, tag.confidence, meme.id)
@@ -184,7 +191,8 @@ function compareArr(userImageObj, memeObj) {
 module.exports = {
   imaggaAPI,
   addMemes,
-  addUserImages
+  addUserImages,
+  ConcurrencyLimitError
 };
 
 // divide confidence of arr1 with confidence of arr2. Closer then number is to one the more accurate it is
