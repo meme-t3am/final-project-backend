@@ -1,5 +1,3 @@
-
-
 const fetch = require('cross-fetch');
 const memeArray = [
   'https://i.kym-cdn.com/photos/images/newsfeed/000/911/486/6bb.jpg',
@@ -17,7 +15,10 @@ const memeArray = [
   // 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg',
 ];
 
-
+/**
+ * script to be called node seed-database.js
+ * this will seed database by passing the memeArray as the body of the fetch call(to the API)
+ */
 fetch('http://localhost:7890/api/v1/imaggas/data', {
   headers: {
     'Content-Type': 'application/json',

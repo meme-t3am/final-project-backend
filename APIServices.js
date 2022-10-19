@@ -4,25 +4,16 @@ const Tag = require('./lib/models/Tag');
 const UserImage = require('./lib/models/UserImage');
 const UserTag = require('./lib/models/UserTag');
 
+/**
+ * this class throws error when concurrency limit has been reached(by API)
+ */
 class ConcurrencyLimitError extends Error {}
 
-
-async function addUserImages(url, user_id) {
-  const results = await imaggaAPI(url.url);
-  const tags = mungeData(results);
-  const image = await UserImage.insert(url.url, user_id);
-  const imagePromises = tags.map((tag) =>
-    UserTag.insertTag(tag.tag, image.id, tag.confidence)
-  );
-  await Promise.all(imagePromises);
-  const newObjArr = {
-    url,
-    tags,
-  };
-  const newUrls = await returnsArr(newObjArr);
-  return newUrls;
-}
-
+/**
+ * 
+ * @param {string} imgURL 
+ * @returns an object of URL, and an array of tags and confidence
+ */
 async function imaggaAPI(imgURL) {
   const url =
     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
@@ -46,6 +37,11 @@ async function imaggaAPI(imgURL) {
   }
 }
 
+/**
+ * 
+ * @param {object} data
+ * @returns simplifies the data from the API (tag and confidence)
+ */
 function mungeData(data) {
   const result = data.result.tags.map((datum) => {
     const newObj = {
@@ -57,25 +53,6 @@ function mungeData(data) {
   return result;
 }
 
-//this is a single use function we only call this to seed our database
-async function addMemes(memeUrlArray) {
-  const promises = memeUrlArray.map(async (url) => {
-    const results = await imaggaAPI(url);
-    const tags = mungeData(results);
-    const meme = await Meme.insert(url);
-    const tagPromises = tags.map((tag) =>
-      Tag.insertMeme(tag.tag, tag.confidence, meme.id)
-    );
-    await Promise.all(tagPromises);
-    const newObj = {
-      url,
-      tags,
-    };
-    return newObj;
-  });
-  const analysis = await Promise.all(promises);
-  return analysis;
-}
 // const arrOne = {
 //   url: 'someUrl.jpeg',
 //   tags: [
@@ -161,6 +138,11 @@ async function addMemes(memeUrlArray) {
 //   ],
 // };
 
+/**
+ * 
+ * @param {array} userArr 
+ * @returns an array with the totalConfidence of image and the meme's URL
+ */
 async function returnsArr(userArr) {
   const resp = await fetch('http://localhost:7890/api/v1/imaggas');
   const arrayOfMemes = await resp.json();
@@ -171,7 +153,12 @@ async function returnsArr(userArr) {
   });
 }
 
-
+/**
+ * 
+ * @param {object} userImageObj this is the result of the API and data munging-for the image user inputed
+ * @param {object} memeObj returnsArr() maps over array and returns meme object
+ * @returns an array with the totalConfidence of image and the meme's URL
+ */
 function compareArr(userImageObj, memeObj) {
   const memeUrl = memeObj.url;
 
@@ -182,6 +169,52 @@ function compareArr(userImageObj, memeObj) {
     return acc + curr.confidence;
   }, 0);
   return [totalConfidence, memeUrl];
+}
+
+/**
+ * 
+ * @param {object} url {url: 'url'} 
+ * @param {string} user_id
+ * @returns an array of matching meme URL's to the inputed URL
+ */
+async function addUserImages(url, user_id) {
+  const results = await imaggaAPI(url.url);
+  const tags = mungeData(results);
+  const image = await UserImage.insert(url.url, user_id);
+  const imagePromises = tags.map((tag) =>
+    UserTag.insertTag(tag.tag, image.id, tag.confidence)
+  );
+  await Promise.all(imagePromises);
+  const newObjArr = {
+    url,
+    tags,
+  };
+  const newUrls = await returnsArr(newObjArr);
+  return newUrls;
+}
+
+/**
+ * 
+ * @param {array} memeUrlArray 
+ * @returns this is a single use function we only call this to seed our database
+ */
+async function addMemes(memeUrlArray) {
+  const promises = memeUrlArray.map(async (url) => {
+    const results = await imaggaAPI(url);
+    const tags = mungeData(results);
+    const meme = await Meme.insert(url);
+    const tagPromises = tags.map((tag) =>
+      Tag.insertMeme(tag.tag, tag.confidence, meme.id)
+    );
+    await Promise.all(tagPromises);
+    const newObj = {
+      url,
+      tags,
+    };
+    return newObj;
+  });
+  const analysis = await Promise.all(promises);
+  return analysis;
 }
 
 module.exports = {
