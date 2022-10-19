@@ -1,7 +1,19 @@
 const fetch = require('cross-fetch');
 const Meme = require('./lib/models/Meme');
 const Tag = require('./lib/models/Tag');
+const UserImage = require('./lib/models/UserImage');
+const UserTag = require('./lib/models/UserTag');
 
+/**
+ * this class throws error when concurrency limit has been reached(by API)
+ */
+class ConcurrencyLimitError extends Error {}
+
+/**
+ * 
+ * @param {string} imgURL 
+ * @returns an object of URL, and an array of tags and confidence
+ */
 async function imaggaAPI(imgURL) {
   const url =
     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
@@ -18,9 +30,18 @@ async function imaggaAPI(imgURL) {
     },
   });
   const body = await res.json();
-  return body;
+  if (res.status === 403 && body.status.text.match(/concurrent/)) {
+    throw new ConcurrencyLimitError();
+  } else {
+    return body;
+  }
 }
 
+/**
+ * 
+ * @param {object} data
+ * @returns simplifies the data from the API (tag and confidence)
+ */
 function mungeData(data) {
   const result = data.result.tags.map((datum) => {
     const newObj = {
@@ -32,8 +53,152 @@ function mungeData(data) {
   return result;
 }
 
+// const arrOne = {
+//   url: 'someUrl.jpeg',
+//   tags: [
+//     { tag: 'book jacket', confidence: 98 },
+//     { tag: 'jacket', confidence: 77 },
+//     { tag: 'wrapping', confidence: 58 },
+//     { tag: 'covering', confidence: 38 },
+//     { tag: 'magazine', confidence: 28 },
+//     { tag: 'slick', confidence: 25 },
+//     { tag: 'product', confidence: 23 },
+//     { tag: 'man', confidence: 21 },
+//     { tag: 'comic book', confidence: 20 },
+//     { tag: 'philately', confidence: 20 },
+//     { tag: 'postmark', confidence: 20 },
+//     { tag: 'stamp', confidence: 20 },
+//     { tag: 'letter', confidence: 20 },
+//     { tag: 'mail', confidence: 20 },
+//     { tag: 'old', confidence: 19 },
+//     { tag: 'vintage', confidence: 19 },
+//     { tag: 'circa', confidence: 17 },
+//     { tag: 'male', confidence: 17 },
+//     { tag: 'envelope', confidence: 17 },
+//     { tag: 'creation', confidence: 17 },
+//     { tag: 'retro', confidence: 17 },
+//     { tag: 'ancient', confidence: 16 },
+//     { tag: 'aged', confidence: 16 },
+//     { tag: 'postage', confidence: 15 },
+//     { tag: 'postal', confidence: 15 },
+//     { tag: 'address', confidence: 15 },
+//     { tag: 'card', confidence: 15 },
+//     { tag: 'business', confidence: 15 },
+//     { tag: 'person', confidence: 14 },
+//     { tag: 'sport', confidence: 14 },
+//     { tag: 'message', confidence: 14 },
+//     { tag: 'people', confidence: 13 },
+//     { tag: 'competition', confidence: 13 },
+//     { tag: 'adult', confidence: 13 },
+//     { tag: 'money', confidence: 12 },
+//     { tag: 'finance', confidence: 11 },
+//     { tag: 'post office', confidence: 10 },
+//     { tag: 'currency', confidence: 10 },
+//     { tag: 'silhouette', confidence: 10 },
+//     { tag: 'player', confidence: 10 },
+//     { tag: 'ball', confidence: 10 },
+//     { tag: 'symbol', confidence: 10 },
+//     { tag: 'printed', confidence: 9 },
+//     { tag: 'close', confidence: 9 },
+//     { tag: 'success', confidence: 9 },
+//     { tag: 'bill', confidence: 9 },
+//     { tag: 'men', confidence: 9 },
+//     { tag: 'cash', confidence: 9 },
+//     { tag: 'bank', confidence: 9 },
+//     { tag: 'human', confidence: 8 },
+//     { tag: 'game', confidence: 8 },
+//     { tag: 'financial', confidence: 8 },
+//     { tag: 'philatelic', confidence: 8 },
+//     { tag: 'shows', confidence: 8 },
+//     { tag: 'businessman', confidence: 8 },
+//     { tag: 'soccer', confidence: 8 },
+//     { tag: 'education', confidence: 8 },
+//     { tag: 'hobby', confidence: 8 },
+//     { tag: 'portrait', confidence: 8 },
+//     { tag: 'print media', confidence: 8 },
+//     { tag: 'alone', confidence: 8 },
+//     { tag: 'student', confidence: 8 },
+//     { tag: 'active', confidence: 8 },
+//     { tag: 'to', confidence: 7 },
+//     { tag: '1987', confidence: 7 },
+//     { tag: 'championship', confidence: 7 },
+//     { tag: 'modern', confidence: 7 },
+//     { tag: 'football', confidence: 7 },
+//     { tag: 'professional', confidence: 7 },
+//     { tag: 'sign', confidence: 7 },
+//     { tag: 'dollar', confidence: 7 },
+//     { tag: 'action', confidence: 7 },
+//     { tag: 'black', confidence: 7 },
+//     { tag: 'school', confidence: 7 },
+//     { tag: 'team', confidence: 7 },
+//     { tag: 'face', confidence: 7 },
+//     { tag: 'paper', confidence: 7 },
+//     { tag: 'little', confidence: 7 },
+//     { tag: 'did that work?', confidence: 7 },
+//   ],
+// };
+
+/**
+ * 
+ * @param {array} userArr 
+ * @returns an array with the totalConfidence of image and the meme's URL
+ */
+async function returnsArr(userArr) {
+  const resp = await fetch('http://localhost:7890/api/v1/imaggas');
+  const arrayOfMemes = await resp.json();
+  return arrayOfMemes.map((meme) => { 
+    const newArr = meme;
+    const results = compareArr(userArr, newArr);
+    return results;
+  });
+}
+
+/**
+ * 
+ * @param {object} userImageObj this is the result of the API and data munging-for the image user inputed
+ * @param {object} memeObj returnsArr() maps over array and returns meme object
+ * @returns an array with the totalConfidence of image and the meme's URL
+ */
+function compareArr(userImageObj, memeObj) {
+  const memeUrl = memeObj.url;
+
+  const sameTags = memeObj.meme_tags.filter((obj2) =>
+    userImageObj.tags.find((obj1) => obj1.tag === obj2.tag)
+  );
+  const totalConfidence = sameTags.reduce((acc, curr) => {
+    return acc + curr.confidence;
+  }, 0);
+  return [totalConfidence, memeUrl];
+}
+
+/**
+ * 
+ * @param {object} url {url: 'url'} 
+ * @param {string} user_id
+ * @returns an array of matching meme URL's to the inputed URL
+ */
+async function addUserImages(url, user_id) {
+  const results = await imaggaAPI(url.url);
+  const tags = mungeData(results);
+  const image = await UserImage.insert(url.url, user_id);
+  const imagePromises = tags.map((tag) =>
+    UserTag.insertTag(tag.tag, image.id, tag.confidence)
+  );
+  await Promise.all(imagePromises);
+  const newObjArr = {
+    url,
+    tags,
+  };
+  const newUrls = await returnsArr(newObjArr);
+  return newUrls;
+}
+
+/**
+ * 
+ * @param {array} memeUrlArray 
+ * @returns this is a single use function we only call this to seed our database
+ */
 async function addMemes(memeUrlArray) {
-  //this is a single use function we only call this to seed our database
   const promises = memeUrlArray.map(async (url) => {
     const results = await imaggaAPI(url);
     const tags = mungeData(results);
@@ -52,124 +217,11 @@ async function addMemes(memeUrlArray) {
   return analysis;
 }
 
-const arrOne = {
-  url: 'someUrl.jpeg',
-  tags: [
-    { tag: 'book jacket', confidence: 98 },
-    { tag: 'jacket', confidence: 77 },
-    { tag: 'wrapping', confidence: 58 },
-    { tag: 'covering', confidence: 38 },
-    { tag: 'magazine', confidence: 28 },
-    { tag: 'slick', confidence: 25 },
-    { tag: 'product', confidence: 23 },
-    { tag: 'man', confidence: 21 },
-    { tag: 'comic book', confidence: 20 },
-    { tag: 'philately', confidence: 20 },
-    { tag: 'postmark', confidence: 20 },
-    { tag: 'stamp', confidence: 20 },
-    { tag: 'letter', confidence: 20 },
-    { tag: 'mail', confidence: 20 },
-    { tag: 'old', confidence: 19 },
-    { tag: 'vintage', confidence: 19 },
-    { tag: 'circa', confidence: 17 },
-    { tag: 'male', confidence: 17 },
-    { tag: 'envelope', confidence: 17 },
-    { tag: 'creation', confidence: 17 },
-    { tag: 'retro', confidence: 17 },
-    { tag: 'ancient', confidence: 16 },
-    { tag: 'aged', confidence: 16 },
-    { tag: 'postage', confidence: 15 },
-    { tag: 'postal', confidence: 15 },
-    { tag: 'address', confidence: 15 },
-    { tag: 'card', confidence: 15 },
-    { tag: 'business', confidence: 15 },
-    { tag: 'person', confidence: 14 },
-    { tag: 'sport', confidence: 14 },
-    { tag: 'message', confidence: 14 },
-    { tag: 'people', confidence: 13 },
-    { tag: 'competition', confidence: 13 },
-    { tag: 'adult', confidence: 13 },
-    { tag: 'money', confidence: 12 },
-    { tag: 'finance', confidence: 11 },
-    { tag: 'post office', confidence: 10 },
-    { tag: 'currency', confidence: 10 },
-    { tag: 'silhouette', confidence: 10 },
-    { tag: 'player', confidence: 10 },
-    { tag: 'ball', confidence: 10 },
-    { tag: 'symbol', confidence: 10 },
-    { tag: 'printed', confidence: 9 },
-    { tag: 'close', confidence: 9 },
-    { tag: 'success', confidence: 9 },
-    { tag: 'bill', confidence: 9 },
-    { tag: 'men', confidence: 9 },
-    { tag: 'cash', confidence: 9 },
-    { tag: 'bank', confidence: 9 },
-    { tag: 'human', confidence: 8 },
-    { tag: 'game', confidence: 8 },
-    { tag: 'financial', confidence: 8 },
-    { tag: 'philatelic', confidence: 8 },
-    { tag: 'shows', confidence: 8 },
-    { tag: 'businessman', confidence: 8 },
-    { tag: 'soccer', confidence: 8 },
-    { tag: 'education', confidence: 8 },
-    { tag: 'hobby', confidence: 8 },
-    { tag: 'portrait', confidence: 8 },
-    { tag: 'print media', confidence: 8 },
-    { tag: 'alone', confidence: 8 },
-    { tag: 'student', confidence: 8 },
-    { tag: 'active', confidence: 8 },
-    { tag: 'to', confidence: 7 },
-    { tag: '1987', confidence: 7 },
-    { tag: 'championship', confidence: 7 },
-    { tag: 'modern', confidence: 7 },
-    { tag: 'football', confidence: 7 },
-    { tag: 'professional', confidence: 7 },
-    { tag: 'sign', confidence: 7 },
-    { tag: 'dollar', confidence: 7 },
-    { tag: 'action', confidence: 7 },
-    { tag: 'black', confidence: 7 },
-    { tag: 'school', confidence: 7 },
-    { tag: 'team', confidence: 7 },
-    { tag: 'face', confidence: 7 },
-    { tag: 'paper', confidence: 7 },
-    { tag: 'little', confidence: 7 },
-    { tag: 'did that work?', confidence: 7 },
-  ],
-};
-
-async function returnsArr(userArr) {
-  const resp = await fetch('http://localhost:7890/api/v1/imaggas');
-  const arrayOfMemes = await resp.json();
-  arrayOfMemes.map((meme) => {
-    const newArr = meme;
-    const results = compareArr(userArr, newArr);
-    console.log('results', results);
-    return results;
-  });
-}
-
-returnsArr(arrOne);
-
-function compareArr(userImageObj, memeObj) {
-  // const userImageUrl = userImageObj.url;
-  const memeUrl = memeObj.url;
-
-  const sameTags = memeObj.meme_tags.filter((obj2) =>
-    userImageObj.tags.find((obj1) => obj1.tag === obj2.tag)
-  );
-  // we need to add a new key of confidenceInt. This will be obj1.confidence / obj2.confidence
-  const totalConfidence = sameTags.reduce((acc, curr) => {
-    return acc + curr.confidence;
-  }, 0);
-  return [totalConfidence, memeUrl];
-}
-
 module.exports = {
   imaggaAPI,
   addMemes,
-  compareArr,
-  mungeData,
-  returnsArr,
+  addUserImages,
+  ConcurrencyLimitError
 };
 
 // divide confidence of arr1 with confidence of arr2. Closer then number is to one the more accurate it is
