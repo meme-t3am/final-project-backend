@@ -2,12 +2,13 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const UserService = require('../lib/services/UserService');
 
 const memeArray = [
   'https://i.kym-cdn.com/photos/images/newsfeed/000/911/486/6bb.jpg',
   'https://i.pinimg.com/originals/20/e4/8a/20e48a7750f4d322d9d01efab27e3071.jpg',
   'https://m.media-amazon.com/images/I/51F19r4qV3L._AC_SY580_.jpg',
-  // 'https://i.kym-cdn.com/entries/icons/original/000/030/338/New.jpg',
+  'https://i.kym-cdn.com/entries/icons/original/000/030/338/New.jpg',
   // 'https://cdn.mamamia.com.au/wp/wp-content/uploads/2018/06/18155147/funniest-memes-14.jpg',
   // 'https://www.letseatcake.com/wp-content/uploads/2021/07/funny-memes-13.jpg',
   // 'https://thechive.com/wp-content/uploads/2021/06/rick-and-morty-37.jpeg?attachment_cache_bust=3709299&quality=85&strip=info&w=400',
@@ -18,7 +19,25 @@ const memeArray = [
   // 'https://www.porchdrinking.com/wp-content/uploads/2017/11/3jqRCaO-700x525.png',
   // 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg',
 ];
-// many memes are commented out
+
+const userImage = {
+  url: 'https://www.thesun.co.uk/wp-content/uploads/2016/06/nintchdbpict000242868564.jpg',
+};
+
+const mockUser = {
+  userName: 'User',
+  email: 'test@example.com',
+  password: '12345',
+};
+
+const registerAndLogin = async (userProps = {}) => {
+  const password = userProps.password ?? mockUser.password;
+  const agent = request.agent(app);
+  const user = await UserService.create({ ...mockUser, ...userProps });
+  const { email } = user;
+  await agent.post('/api/v1/users/sessions').send({ email, password });
+  return [agent, user];
+};
 
 describe('user routes', () => {
   beforeEach(() => {
@@ -28,23 +47,16 @@ describe('user routes', () => {
     pool.end();
   });
 
-  it('/imagga returns some data hopefully', async () => {
-    const resp = await request(app).post('/api/v1/imaggas').send({ url: 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg' });
-    expect(resp.body).toEqual([]);
-  });
-
-  it.only('/imagga returns JSON object with tags', async () => {
-    const resp = await request(app).post('/api/v1/imaggas/data').send(memeArray);
-    expect(resp.body).toEqual({});
-  });
-
-  it('GET all memes should return a big array', async () => {
+  it.only('/userimages return the user input image', async () => {
+    const [agent] = await registerAndLogin();
     await request(app).post('/api/v1/imaggas/data').send(memeArray);
-    const resp = await request(app).get('/api/v1/imaggas/');
-    expect(resp.body).toEqual({});
-  });
-  it('compares arrays', async () => {
-    const res = await request(app).post('/api/v1/imaggas/testing').send(memeArray);
+    const res = await agent.post('/api/v1/userimages/data').send(userImage);
+    expect(res.status).toBe(200);
     expect(res.body).toEqual({});
+  });
+
+  it('dummy', async () => {
+    const res = await request(app).post('/api/v1/userimages').send(userImage);
+    expect(res.body).toEqual([]);
   });
 });
