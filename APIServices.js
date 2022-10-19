@@ -23,9 +23,6 @@ async function addUserImages(url, user_id) {
   return newUrls;
 }
 
-
-
-
 async function imaggaAPI(imgURL) {
   const url =
     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
@@ -65,7 +62,6 @@ async function addMemes(memeUrlArray) {
   const promises = memeUrlArray.map(async (url) => {
     const results = await imaggaAPI(url);
     const tags = mungeData(results);
-    console.log('tags', tags);
     const meme = await Meme.insert(url);
     const tagPromises = tags.map((tag) =>
       Tag.insertMeme(tag.tag, tag.confidence, meme.id)

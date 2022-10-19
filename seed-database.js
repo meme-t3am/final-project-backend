@@ -25,6 +25,7 @@ fetch('http://localhost:7890/api/v1/imaggas/data', {
   'method': 'POST',
   'body': JSON.stringify(memeArray)
 }).then((response) => {
+  // eslint-disable-next-line no-console
   console.log(response.status); 
   process.exit(response.status < 400 ? 0 : 1);
 });
