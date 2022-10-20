@@ -55,7 +55,7 @@ function APICall(imgURL) {
 function shapeAPIData(data) {
   const result = data.result.tags.map((datum) => {
     const newObj = {
-      confidence: datum.confidence,
+      confidence: Math.floor(datum.confidence),
       tag: datum.tag.en,
     };
     return newObj;
