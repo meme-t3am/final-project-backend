@@ -14,36 +14,15 @@ class ConcurrencyLimitError extends Error {}
  * @param {string} imgURL
  * @returns an object of URL, and an array of tags and confidence
  */
-// async function APICall(imgURL) {
-//   const url =
-//     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
 
-//   const res = await fetch(url, {
-//     headers: {
-//       Authorization:
-//         'Basic ' +
-//         Buffer.from(
-//           `${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`,
-//           'binary'
-//         ).toString('base64'),
-//       Accept: 'application/json',
-//     },
-//   });
-//   const body = await res.json();
-//   if (res.status === 403 && body.status.text.match(/concurrent/)) {
-//     throw new ConcurrencyLimitError();
-//   } else {
-//     return body;
-//   }
-// }
 const request = require('superagent');
 const Throttle = require('superagent-throttle');
 
 const throttle = new Throttle({
   active: true,
-  rate: 1,
-  ratePer: 5000,
-  concurrent: 1,
+  rate: 2,
+  ratePer: 1000,
+  concurrent: 1, 
 });
 
 const agent = request.agent().use(throttle.plugin());
@@ -62,6 +41,7 @@ function APICall(imgURL) {
       return body;
     })
     .catch((err) => {
+      // eslint-disable-next-line no-console
       console.log('err', err);
     });
   return res;
@@ -95,6 +75,7 @@ async function getAllAndMap(userImageArr) {
     const memeArray = meme;
     const results = compareAiTags(userImageArr, memeArray);
     return results;
+    
   });
 }
 
@@ -111,10 +92,13 @@ function compareAiTags(userImageObj, memeObj) {
     userImageObj.tags.find((obj1) => obj1.tag === obj2.tag)
   );
   const totalConfidence = sameTags.reduce((acc, curr) => {
+
     return acc + curr.confidence;
   }, 0);
   return [totalConfidence, memeUrl];
 }
+
+
 
 /**
  *
@@ -178,7 +162,7 @@ module.exports = {
 // };
 
 // if (newObj.confidence > 50 && newObj.confidenceInt is close to one) {
-//   return {...newObj, confidenceScore: 1};
+//   return {...newObj, confidenceScore: 100};
 //   else if(newObj.confidence > 20 && > 50 && newObj.confidenceInt is less close to one ) {
 //     return{...newObj, confidenceScore: .75}
 //     else {
@@ -186,4 +170,9 @@ module.exports = {
 //     }
 //   }
 // }
-// confidence
+// const newObj = {
+//   tag: 'string',
+//   confidence: 4,
+//   confidenceInt: .67
+//    confidenceScore: 80
+// };

@@ -32,14 +32,17 @@ describe('user routes', () => {
     const resp = await request(app).post('/api/v1/imaggas').send({
       url: 'https://www.porchdrinking.com/wp-content/uploads/2017/11/EorMTbX-700x467.jpg',
     });
-    expect(resp.body).toEqual([]);
+    expect(resp.body).toEqual(expect.anything());
   });
-
-  it('/imagga returns JSON object with tags', async () => {
+  it.only('/imagga returns JSON object with tags', async () => {
     const resp = await request(app)
       .post('/api/v1/imaggas/data')
       .send(memeArray);
-    expect(resp.body).toEqual({});
+    expect(resp.body).toEqual(expect.arrayContaining([{
+      tags: [{ confidence: expect.any(Number), tag: expect.any(String) }],
+      url: expect.any(String)
+    }
+    ]));
   });
 
   it('GET all memes should return a big array', async () => {
