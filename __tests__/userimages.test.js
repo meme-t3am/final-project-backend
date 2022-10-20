@@ -47,11 +47,12 @@ describe('user routes', () => {
     pool.end();
   });
 
-  it('/userimages return the user input image', async () => {
+  it.only('/userimages return the user input image', async () => {
     const [agent] = await registerAndLogin();
     await request(app).post('/api/v1/imaggas/data').send(memeArray);
     const res = await agent.post('/api/v1/userimages/data').send(userImage);
     expect(res.status).toBe(200);
+    expect(res.body).toEqual({});
     // expect(res.body).toBe(expect.arrayContaining([[expect.any(String), expect.any(String)]]));
   });
 });

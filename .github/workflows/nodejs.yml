@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm ci --dev
       - run: npx eslint .
-      - run: npm test
         env:
           CI: true
           DATABASE_URL: postgres://alchemy:alchemy@postgres:5432/alchemy
