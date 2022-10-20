@@ -17,12 +17,11 @@ class ConcurrencyLimitError extends Error {}
  * @returns an object of URL, and an array of tags and confidence
  */
 
-
 const throttle = new Throttle({
   active: true,
   rate: 2,
   ratePer: 1000,
-  concurrent: 1, 
+  concurrent: 1,
 });
 
 const agent = request.agent().use(throttle.plugin());
@@ -55,7 +54,7 @@ function APICall(imgURL) {
 function shapeAPIData(data) {
   const result = data.result.tags.map((datum) => {
     const newObj = {
-      confidence: datum.confidence,
+      confidence: Math.floor(datum.confidence),
       tag: datum.tag.en,
     };
     return newObj;
@@ -69,13 +68,12 @@ function shapeAPIData(data) {
  * @returns an array with the totalConfidence of image and the meme's URL
  */
 async function getAllAndMap(userImageArr) {
-  const resp = await fetch(' https://final-project-backend2.herokuapp.com/api/v1/imaggas');
+  const resp = await fetch(' http://localhost:7890/api/v1/imaggas');
   const arrayOfMemes = await resp.json();
   return arrayOfMemes.map((meme) => {
     const memeArray = meme;
     const results = compareAiTags(userImageArr, memeArray);
     return results;
-    
   });
 }
 
@@ -92,13 +90,11 @@ function compareAiTags(userImageObj, memeObj) {
     userImageObj.tags.find((obj1) => obj1.tag === obj2.tag)
   );
   const totalConfidence = sameTags.reduce((acc, curr) => {
-
     return acc + curr.confidence;
   }, 0);
+  console.log('totalConfidence', totalConfidence);
   return [totalConfidence, memeUrl];
 }
-
-
 
 /**
  *
