@@ -3,6 +3,8 @@ const Meme = require('./lib/models/Meme');
 const Tag = require('./lib/models/Tag');
 const UserImage = require('./lib/models/UserImage');
 const UserTag = require('./lib/models/UserTag');
+const request = require('superagent');
+const Throttle = require('superagent-throttle');
 
 /**
  * this class throws error when concurrency limit has been reached(by API)
@@ -10,39 +12,47 @@ const UserTag = require('./lib/models/UserTag');
 class ConcurrencyLimitError extends Error {}
 
 /**
- * 
- * @param {string} imgURL 
+ *
+ * @param {string} imgURL
  * @returns an object of URL, and an array of tags and confidence
  */
-async function imaggaAPI(imgURL) {
-  const url =
+
+
+const throttle = new Throttle({
+  active: true,
+  rate: 2,
+  ratePer: 1000,
+  concurrent: 1, 
+});
+
+const agent = request.agent().use(throttle.plugin());
+
+function APICall(imgURL) {
+  const endpoint =
     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
 
-  const res = await fetch(url, {
-    headers: {
-      Authorization:
-        'Basic ' +
-        Buffer.from(
-          `${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`,
-          'binary'
-        ).toString('base64'),
-      Accept: 'application/json',
-    },
-  });
-  const body = await res.json();
-  if (res.status === 403 && body.status.text.match(/concurrent/)) {
-    throw new ConcurrencyLimitError();
-  } else {
-    return body;
-  }
+  const res = agent
+    .get(endpoint)
+    .auth(process.env.IMAGGA_KEY, process.env.IMAGGA_SECRET)
+    .set('Accept', 'application/json')
+    .set('Content-Type', 'application/json')
+    .then((res) => {
+      const body = res.body;
+      return body;
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log('err', err);
+    });
+  return res;
 }
 
 /**
- * 
+ *
  * @param {object} data
  * @returns simplifies the data from the API (tag and confidence)
  */
-function mungeData(data) {
+function shapeAPIData(data) {
   const result = data.result.tags.map((datum) => {
     const newObj = {
       confidence: datum.confidence,
@@ -53,155 +63,74 @@ function mungeData(data) {
   return result;
 }
 
-// const arrOne = {
-//   url: 'someUrl.jpeg',
-//   tags: [
-//     { tag: 'book jacket', confidence: 98 },
-//     { tag: 'jacket', confidence: 77 },
-//     { tag: 'wrapping', confidence: 58 },
-//     { tag: 'covering', confidence: 38 },
-//     { tag: 'magazine', confidence: 28 },
-//     { tag: 'slick', confidence: 25 },
-//     { tag: 'product', confidence: 23 },
-//     { tag: 'man', confidence: 21 },
-//     { tag: 'comic book', confidence: 20 },
-//     { tag: 'philately', confidence: 20 },
-//     { tag: 'postmark', confidence: 20 },
-//     { tag: 'stamp', confidence: 20 },
-//     { tag: 'letter', confidence: 20 },
-//     { tag: 'mail', confidence: 20 },
-//     { tag: 'old', confidence: 19 },
-//     { tag: 'vintage', confidence: 19 },
-//     { tag: 'circa', confidence: 17 },
-//     { tag: 'male', confidence: 17 },
-//     { tag: 'envelope', confidence: 17 },
-//     { tag: 'creation', confidence: 17 },
-//     { tag: 'retro', confidence: 17 },
-//     { tag: 'ancient', confidence: 16 },
-//     { tag: 'aged', confidence: 16 },
-//     { tag: 'postage', confidence: 15 },
-//     { tag: 'postal', confidence: 15 },
-//     { tag: 'address', confidence: 15 },
-//     { tag: 'card', confidence: 15 },
-//     { tag: 'business', confidence: 15 },
-//     { tag: 'person', confidence: 14 },
-//     { tag: 'sport', confidence: 14 },
-//     { tag: 'message', confidence: 14 },
-//     { tag: 'people', confidence: 13 },
-//     { tag: 'competition', confidence: 13 },
-//     { tag: 'adult', confidence: 13 },
-//     { tag: 'money', confidence: 12 },
-//     { tag: 'finance', confidence: 11 },
-//     { tag: 'post office', confidence: 10 },
-//     { tag: 'currency', confidence: 10 },
-//     { tag: 'silhouette', confidence: 10 },
-//     { tag: 'player', confidence: 10 },
-//     { tag: 'ball', confidence: 10 },
-//     { tag: 'symbol', confidence: 10 },
-//     { tag: 'printed', confidence: 9 },
-//     { tag: 'close', confidence: 9 },
-//     { tag: 'success', confidence: 9 },
-//     { tag: 'bill', confidence: 9 },
-//     { tag: 'men', confidence: 9 },
-//     { tag: 'cash', confidence: 9 },
-//     { tag: 'bank', confidence: 9 },
-//     { tag: 'human', confidence: 8 },
-//     { tag: 'game', confidence: 8 },
-//     { tag: 'financial', confidence: 8 },
-//     { tag: 'philatelic', confidence: 8 },
-//     { tag: 'shows', confidence: 8 },
-//     { tag: 'businessman', confidence: 8 },
-//     { tag: 'soccer', confidence: 8 },
-//     { tag: 'education', confidence: 8 },
-//     { tag: 'hobby', confidence: 8 },
-//     { tag: 'portrait', confidence: 8 },
-//     { tag: 'print media', confidence: 8 },
-//     { tag: 'alone', confidence: 8 },
-//     { tag: 'student', confidence: 8 },
-//     { tag: 'active', confidence: 8 },
-//     { tag: 'to', confidence: 7 },
-//     { tag: '1987', confidence: 7 },
-//     { tag: 'championship', confidence: 7 },
-//     { tag: 'modern', confidence: 7 },
-//     { tag: 'football', confidence: 7 },
-//     { tag: 'professional', confidence: 7 },
-//     { tag: 'sign', confidence: 7 },
-//     { tag: 'dollar', confidence: 7 },
-//     { tag: 'action', confidence: 7 },
-//     { tag: 'black', confidence: 7 },
-//     { tag: 'school', confidence: 7 },
-//     { tag: 'team', confidence: 7 },
-//     { tag: 'face', confidence: 7 },
-//     { tag: 'paper', confidence: 7 },
-//     { tag: 'little', confidence: 7 },
-//     { tag: 'did that work?', confidence: 7 },
-//   ],
-// };
-
 /**
- * 
- * @param {array} userArr 
+ *
+ * @param {array} userImageArr
  * @returns an array with the totalConfidence of image and the meme's URL
  */
-async function returnsArr(userArr) {
-  const resp = await fetch('http://localhost:7890/api/v1/imaggas');
+async function getAllAndMap(userImageArr) {
+  const resp = await fetch(' https://final-project-backend2.herokuapp.com/api/v1/imaggas');
   const arrayOfMemes = await resp.json();
-  return arrayOfMemes.map((meme) => { 
-    const newArr = meme;
-    const results = compareArr(userArr, newArr);
+  return arrayOfMemes.map((meme) => {
+    const memeArray = meme;
+    const results = compareAiTags(userImageArr, memeArray);
     return results;
+    
   });
 }
 
 /**
- * 
+ *
  * @param {object} userImageObj this is the result of the API and data munging-for the image user inputed
- * @param {object} memeObj returnsArr() maps over array and returns meme object
+ * @param {object} memeObj getAllAndMap() maps over array and returns meme object
  * @returns an array with the totalConfidence of image and the meme's URL
  */
-function compareArr(userImageObj, memeObj) {
+function compareAiTags(userImageObj, memeObj) {
   const memeUrl = memeObj.url;
 
   const sameTags = memeObj.meme_tags.filter((obj2) =>
     userImageObj.tags.find((obj1) => obj1.tag === obj2.tag)
   );
   const totalConfidence = sameTags.reduce((acc, curr) => {
+
     return acc + curr.confidence;
   }, 0);
   return [totalConfidence, memeUrl];
 }
 
+
+
 /**
- * 
- * @param {object} url {url: 'url'} 
+ *
+ * @param {object} url {url: 'url'}
  * @param {string} user_id
  * @returns an array of matching meme URL's to the inputed URL
  */
 async function addUserImages(url, user_id) {
-  const results = await imaggaAPI(url.url);
-  const tags = mungeData(results);
+  const results = await APICall(url.url);
+  const tags = shapeAPIData(results);
   const image = await UserImage.insert(url.url, user_id);
   const imagePromises = tags.map((tag) =>
     UserTag.insertTag(tag.tag, image.id, tag.confidence)
   );
   await Promise.all(imagePromises);
-  const newObjArr = {
+  const newArrObjects = {
     url,
     tags,
   };
-  const newUrls = await returnsArr(newObjArr);
+  const newUrls = await getAllAndMap(newArrObjects);
   return newUrls;
 }
 
 /**
- * 
- * @param {array} memeUrlArray 
+ *
+ * @param {array} memeUrlArray
  * @returns this is a single use function we only call this to seed our database
  */
 async function addMemes(memeUrlArray) {
   const promises = memeUrlArray.map(async (url) => {
-    const results = await imaggaAPI(url);
-    const tags = mungeData(results);
+    const results = await APICall(url);
+    const tags = shapeAPIData(results);
     const meme = await Meme.insert(url);
     const tagPromises = tags.map((tag) =>
       Tag.insertMeme(tag.tag, tag.confidence, meme.id)
@@ -218,10 +147,10 @@ async function addMemes(memeUrlArray) {
 }
 
 module.exports = {
-  imaggaAPI,
+  APICall,
   addMemes,
   addUserImages,
-  ConcurrencyLimitError
+  ConcurrencyLimitError,
 };
 
 // divide confidence of arr1 with confidence of arr2. Closer then number is to one the more accurate it is
@@ -233,7 +162,7 @@ module.exports = {
 // };
 
 // if (newObj.confidence > 50 && newObj.confidenceInt is close to one) {
-//   return {...newObj, confidenceScore: 1};
+//   return {...newObj, confidenceScore: 100};
 //   else if(newObj.confidence > 20 && > 50 && newObj.confidenceInt is less close to one ) {
 //     return{...newObj, confidenceScore: .75}
 //     else {
@@ -241,4 +170,9 @@ module.exports = {
 //     }
 //   }
 // }
-// confidence
+// const newObj = {
+//   tag: 'string',
+//   confidence: 4,
+//   confidenceInt: .67
+//    confidenceScore: 80
+// };

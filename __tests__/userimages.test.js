@@ -6,9 +6,9 @@ const UserService = require('../lib/services/UserService');
 
 const memeArray = [
   'https://i.kym-cdn.com/photos/images/newsfeed/000/911/486/6bb.jpg',
-  'https://i.pinimg.com/originals/20/e4/8a/20e48a7750f4d322d9d01efab27e3071.jpg',
-  'https://m.media-amazon.com/images/I/51F19r4qV3L._AC_SY580_.jpg',
-  'https://i.kym-cdn.com/entries/icons/original/000/030/338/New.jpg',
+  // 'https://i.pinimg.com/originals/20/e4/8a/20e48a7750f4d322d9d01efab27e3071.jpg',
+  // 'https://m.media-amazon.com/images/I/51F19r4qV3L._AC_SY580_.jpg',
+  // 'https://i.kym-cdn.com/entries/icons/original/000/030/338/New.jpg',
   // 'https://cdn.mamamia.com.au/wp/wp-content/uploads/2018/06/18155147/funniest-memes-14.jpg',
   // 'https://www.letseatcake.com/wp-content/uploads/2021/07/funny-memes-13.jpg',
   // 'https://thechive.com/wp-content/uploads/2021/06/rick-and-morty-37.jpeg?attachment_cache_bust=3709299&quality=85&strip=info&w=400',
@@ -53,10 +53,6 @@ describe('user routes', () => {
     const res = await agent.post('/api/v1/userimages/data').send(userImage);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({});
-  });
-
-  it('dummy', async () => {
-    const res = await request(app).post('/api/v1/userimages').send(userImage);
-    expect(res.body).toEqual([]);
+    // expect(res.body).toBe(expect.arrayContaining([[expect.any(String), expect.any(String)]]));
   });
 });

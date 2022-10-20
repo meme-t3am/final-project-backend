@@ -70,32 +70,6 @@ describe('user routes', () => {
     const res = await agent.get('/api/v1/users/');
     expect(res.status).toEqual(403);
   });
-
-  it('/users should return 200 if user is admin', async () => {
-    const agent = request.agent(app);
-
-    // create a new user
-    await agent.post('/api/v1/users').send({
-      email: 'admin',
-      password: '1234',
-      userName: 'admin',
-    });
-    // sign in the user
-    await agent
-      .post('/api/v1/users/sessions')
-      .send({ email: 'admin', password: '1234' });
-
-    // const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/users/');
-    expect(res.status).toEqual(200);
-  });
-
-  it('/users should return a 200 if user is admin', async () => {
-    const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/users/');
-    expect(res.status).toEqual(200);
-  });
-
   it('DELETE /sessions deletes the user session', async () => {
     const [agent] = await registerAndLogin();
     const resp = await agent.delete('/api/v1/users/sessions');
