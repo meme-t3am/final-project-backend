@@ -14,27 +14,57 @@ class ConcurrencyLimitError extends Error {}
  * @param {string} imgURL
  * @returns an object of URL, and an array of tags and confidence
  */
-async function APICall(imgURL) {
-  const url =
+// async function APICall(imgURL) {
+//   const url =
+//     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
+
+//   const res = await fetch(url, {
+//     headers: {
+//       Authorization:
+//         'Basic ' +
+//         Buffer.from(
+//           `${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`,
+//           'binary'
+//         ).toString('base64'),
+//       Accept: 'application/json',
+//     },
+//   });
+//   const body = await res.json();
+//   if (res.status === 403 && body.status.text.match(/concurrent/)) {
+//     throw new ConcurrencyLimitError();
+//   } else {
+//     return body;
+//   }
+// }
+const request = require('superagent');
+const Throttle = require('superagent-throttle');
+
+const throttle = new Throttle({
+  active: true,
+  rate: 1,
+  ratePer: 5000,
+  concurrent: 1,
+});
+
+const agent = request.agent().use(throttle.plugin());
+
+function APICall(imgURL) {
+  const endpoint =
     'https://api.imagga.com/v2/tags?image_url=' + encodeURIComponent(imgURL);
 
-  const res = await fetch(url, {
-    headers: {
-      Authorization:
-        'Basic ' +
-        Buffer.from(
-          `${process.env.IMAGGA_KEY}:${process.env.IMAGGA_SECRET}`,
-          'binary'
-        ).toString('base64'),
-      Accept: 'application/json',
-    },
-  });
-  const body = await res.json();
-  if (res.status === 403 && body.status.text.match(/concurrent/)) {
-    throw new ConcurrencyLimitError();
-  } else {
-    return body;
-  }
+  const res = agent
+    .get(endpoint)
+    .auth(process.env.IMAGGA_KEY, process.env.IMAGGA_SECRET)
+    .set('Accept', 'application/json')
+    .set('Content-Type', 'application/json')
+    .then((res) => {
+      const body = res.body;
+      return body;
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
+  return res;
 }
 
 /**

@@ -29,15 +29,13 @@ describe('user routes', () => {
   });
 
   it('/imagga returns some data hopefully', async () => {
-    const resp = await request(app)
-      .post('/api/v1/imaggas')
-      .send({
-        url: 'https://worldwideinterweb.com/wp-content/uploads/2017/10/best-baby-memes.jpg',
-      });
+    const resp = await request(app).post('/api/v1/imaggas').send({
+      url: 'https://www.porchdrinking.com/wp-content/uploads/2017/11/EorMTbX-700x467.jpg',
+    });
     expect(resp.body).toEqual([]);
   });
 
-  it.only('/imagga returns JSON object with tags', async () => {
+  it('/imagga returns JSON object with tags', async () => {
     const resp = await request(app)
       .post('/api/v1/imaggas/data')
       .send(memeArray);
