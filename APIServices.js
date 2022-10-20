@@ -69,7 +69,7 @@ function shapeAPIData(data) {
  * @returns an array with the totalConfidence of image and the meme's URL
  */
 async function getAllAndMap(userImageArr) {
-  const resp = await fetch('http://localhost:7890/api/v1/imaggas');
+  const resp = await fetch(' https://final-project-backend2.herokuapp.com/api/v1/imaggas');
   const arrayOfMemes = await resp.json();
   return arrayOfMemes.map((meme) => {
     const memeArray = meme;
