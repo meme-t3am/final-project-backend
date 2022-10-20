@@ -52,6 +52,6 @@ describe('user routes', () => {
     await request(app).post('/api/v1/imaggas/data').send(memeArray);
     const res = await agent.post('/api/v1/userimages/data').send(userImage);
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({});
+    // expect(res.body).toBe(expect.arrayContaining([[expect.any(String), expect.any(String)]]));
   });
 });

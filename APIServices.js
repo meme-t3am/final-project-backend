@@ -3,6 +3,8 @@ const Meme = require('./lib/models/Meme');
 const Tag = require('./lib/models/Tag');
 const UserImage = require('./lib/models/UserImage');
 const UserTag = require('./lib/models/UserTag');
+const request = require('superagent');
+const Throttle = require('superagent-throttle');
 
 /**
  * this class throws error when concurrency limit has been reached(by API)
@@ -15,8 +17,6 @@ class ConcurrencyLimitError extends Error {}
  * @returns an object of URL, and an array of tags and confidence
  */
 
-const request = require('superagent');
-const Throttle = require('superagent-throttle');
 
 const throttle = new Throttle({
   active: true,
