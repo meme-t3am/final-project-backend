@@ -73,7 +73,7 @@ const throttle = new Throttle({
 });
 
 request
-  .post('http://localhost:7890/api/v1/imaggas/data')
+  .post('https://allegori-backend.herokuapp.com/api/v1/imaggas/data')
   .send(memeArray)
   .use(throttle.plugin())
   .set('Accept', 'application/json')
